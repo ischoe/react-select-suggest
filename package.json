@@ -1,6 +1,6 @@
 {
   "name": "new-webpack-project-with-react",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "scripts": {
     "test": "tape test/setup.js -r babel-register components/ReactSelectSuggest/test/*.test.js --require ignore-styles",
