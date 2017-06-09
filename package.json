@@ -1,5 +1,5 @@
 {
-  "name": "new-webpack-project-with-react",
+  "name": "react-select-suggest",
   "version": "0.1.1",
   "description": "",
   "scripts": {
@@ -58,5 +58,6 @@
     "webpack-dev-server": "2.4.5",
     "webpack-hot-middleware": "2.18.0",
     "webpack-md5-hash": "0.0.5"
-  }
+  },
+  "dependencies": {}
 }
