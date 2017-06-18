@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { render } from 'react-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -15,19 +16,22 @@ const App = ({reactSelectSuggest, actions}) => (
         reactSelectSuggest={reactSelectSuggest} 
         actions={actions}/>
   </div>
-)
+);
 
 const mapStateToProps = state => ({
     reactSelectSuggest: state.ReactSelectSuggestReducer
-})
+});
 
-const mapDispatchToProps = dispatch => {
-    return {
-      actions: bindActionCreators({...ReactSelectSuggestActions}, dispatch)
-    }
-}
+const mapDispatchToProps = dispatch => ({
+    actions: bindActionCreators({...ReactSelectSuggestActions}, dispatch)
+});
+
+App.propTypes = {
+    actions: PropTypes.object.isRequired,
+    reactSelectSuggest: PropTypes.object.isRequired
+};
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(App)
+)(App);

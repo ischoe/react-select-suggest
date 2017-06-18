@@ -1,6 +1,6 @@
 import test from 'tape';
 import sinon from 'sinon';
-import ReactSelectSuggestReducer from '../ReactSelectSuggestReducer'
+import ReactSelectSuggestReducer from '../ReactSelectSuggestReducer';
 
 test('SHOW_PLACEHOLDER can be set', (assert) => {
   const action = {

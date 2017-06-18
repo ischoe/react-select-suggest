@@ -6,18 +6,23 @@ import ajaxLoader from './ajax-loader.gif';
 
 class ReactSelectSuggest extends Component {
 
-    constructor(props) {
+    constructor (props) {
         super(props);
+        this.handleSelectedClick = this.handleSelectedClick.bind(this);
+        this.handleFocus = this.handleFocus.bind(this);
+        this.handleBlur = this.handleBlur.bind(this);
+        this.handleClick = this.handleClick.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleItemClick = this.handleItemClick.bind(this);
     }
 
-    componentDidMount() {
+    componentDidMount () {
         const { boxWidth } = this.props,
             { inputField, mainBox } = this.refs,
-            { offsetWidth : inputOffset } = inputField,
-            { offsetWidth : mainOffset } = mainBox,
+            { offsetWidth: inputOffset } = inputField,
+            { offsetWidth: mainOffset } = mainBox,
             boxWidthValue = parseInt(boxWidth);
-        
-        if(boxWidth) {
+        if (boxWidth) {
             if(inputOffset > boxWidthValue) {
                 const offset = inputOffset - boxWidthValue,
                     inputOffsetInPx = (boxWidthValue - offset) + 'px';
@@ -84,7 +89,7 @@ class ReactSelectSuggest extends Component {
         return {
             url: url,
             showAttr: showAttr
-        }
+        };
     }
 
     handleChange(e) {
@@ -95,19 +100,19 @@ class ReactSelectSuggest extends Component {
     checkDisplay(valueToCheck) {
         return {
             display: valueToCheck ? 'block' : 'none'
-        }
+        };
     }
 
     checkHeight(height) {
         return {
             maxHeight: height + 'px'
-        }
+        };
     }
 
     checkWidth(width) {
         return {
             width: width + 'px'
-        }
+        };
     }
 
     render() {
@@ -126,13 +131,13 @@ class ReactSelectSuggest extends Component {
                     </div>
                     <div className="react-select-selected"
                         style={this.checkDisplay(hasSelected)}
-                        onClick={this.handleSelectedClick.bind(this)}> 
+                        onClick={this.handleSelectedClick}> 
                         {selectedItem}
                     </div>
-                    <input onFocus={this.handleFocus.bind(this)}
-                        onBlur={this.handleBlur.bind(this)}
-                        onClick={this.handleClick.bind(this)}
-                        onChange={this.handleChange.bind(this)}
+                    <input onFocus={this.handleFocus}
+                        onBlur={this.handleBlur}
+                        onClick={this.handleClick}
+                        onChange={this.handleChange}
                         style={
                             Object.assign(
                                 this.checkDisplay(!hasSelected),
@@ -145,20 +150,20 @@ class ReactSelectSuggest extends Component {
                     style={
                         Object.assign(
                             this.checkDisplay(resultAvailable && showDropDown),
-                            this.checkHeight(boxHeight),
+                            this.checkHeight(boxHeight)
                         )
                     }>
                     {resultAvailable && showDropDown &&
                         <ul>
                             {searchResults.map((result, index) =>
-                                <li onMouseDown={this.handleItemClick.bind(this)} 
-                                    key={index} 
+                                <li onMouseDown={this.handleItemClick} 
+                                    key={index}
                                     className={index % 2 > 0 ? 'odd' : 'even'}>{result[showAttr]}</li>
                             )}
                         </ul>
                     }
                 </div>
-                <div className="react-select-box"></div>
+                <div className="react-select-box" />
             </div>
         );
     }
@@ -168,7 +173,10 @@ ReactSelectSuggest.propTypes = {
     actions: PropTypes.object.isRequired,
     reactSelectSuggest: PropTypes.object.isRequired,
     url: PropTypes.string.isRequired,
-    showAttr: PropTypes.string.isRequired
-}
+    showAttr: PropTypes.string.isRequired,
+    boxWidth: PropTypes.string,
+    boxHeight: PropTypes.string,
+    placeholder: PropTypes.string
+};
 
 export default ReactSelectSuggest;
