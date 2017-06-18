@@ -13,12 +13,7 @@ test('calling the search function will start fetching', (assert) => {
     dispatch.calledWith({type: 'SEARCH_RESULTS_START'}),
     true,
     'SEARCH_RESULTS_START has been called');
-  /*
-  assert.equal(
-    dispatch.calledWith({type: 'SEARCH_RESULTS_START'}),
-    true,
-    'SEARCH_RESULTS_START has been called');      
- */
+
   assert.end();
 
 });

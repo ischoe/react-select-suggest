@@ -3,7 +3,8 @@ const initialState = {
     inputValue: '',
     fetching: false,
     showDropDown: false,
-    searchResults: []
+    searchResults: [],
+    error: false
 };
 
 export default function reactSelectSuggest(state = initialState, action) {

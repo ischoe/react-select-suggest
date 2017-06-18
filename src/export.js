@@ -1,6 +1,6 @@
-import ReactSelectSuggestReducer from './components/ReactSelectSuggest/ReactSelectSuggestReducer';
-import * as ReactSelectSuggestActions from './components/ReactSelectSuggest/ReactSelectSuggestActions';
-import ReactSelectSuggest from './components/ReactSelectSuggest/ReactSelectSuggest';
+import ReactSelectSuggestReducer from './ReactSelectSuggest/ReactSelectSuggestReducer';
+import * as ReactSelectSuggestActions from './ReactSelectSuggest/ReactSelectSuggestActions';
+import ReactSelectSuggest from './ReactSelectSuggest/ReactSelectSuggest';
 
 export {
   ReactSelectSuggestActions,

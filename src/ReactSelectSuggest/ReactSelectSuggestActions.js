@@ -22,5 +22,5 @@ const fetchResults = (inputValue, sendData) => dispatch => {
         .then(result =>  result.data)
         .then(data =>  data.filter(item => item[sendData.showAttr].includes(inputValue)))
         .then(returnResults =>  dispatch(searchResultsSuccess(returnResults)))
-        .catch(error => dispatch(searchResultsError(error)));
+        .catch(error => dispatch(searchResultsError(error.message)));
 };

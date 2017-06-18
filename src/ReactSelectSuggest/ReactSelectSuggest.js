@@ -22,6 +22,7 @@ class ReactSelectSuggest extends Component {
             { offsetWidth: inputOffset } = inputField,
             { offsetWidth: mainOffset } = mainBox,
             boxWidthValue = parseInt(boxWidth);
+
         if (boxWidth) {
             if(inputOffset > boxWidthValue) {
                 const offset = inputOffset - boxWidthValue,
@@ -117,9 +118,10 @@ class ReactSelectSuggest extends Component {
 
     render() {
         const { reactSelectSuggest, placeholder, showAttr, boxHeight, boxWidth } = this.props,
-            { showPlaceholder, inputValue, searchResults, showDropDown, fetching, selectedItem } = reactSelectSuggest,
+            { showPlaceholder, inputValue, searchResults, showDropDown, fetching, selectedItem, error } = reactSelectSuggest,
             resultAvailable = searchResults && searchResults.length > 0,
-            hasSelected = selectedItem && selectedItem.length > 0;
+            hasSelected = selectedItem && selectedItem.length > 0,
+            errorsAvailable = error !== false;
 
         return (
             <div ref="mainBox" className="react-select-suggest" style={this.checkWidth(boxWidth)}>
@@ -160,6 +162,13 @@ class ReactSelectSuggest extends Component {
                                     key={index}
                                     className={index % 2 > 0 ? 'odd' : 'even'}>{result[showAttr]}</li>
                             )}
+                        </ul>
+                    }
+                </div>
+                <div className="react-select-box-errors" style={this.checkDisplay(errorsAvailable)}>
+                    {errorsAvailable &&
+                        <ul>
+                            <li>{error}</li>
                         </ul>
                     }
                 </div>

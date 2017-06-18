@@ -6,8 +6,8 @@
   "scripts": {
     "start": "npm run open:src",
     "open:src": "babel-node tools/srcServer.js",
-    "test": "tape tools/testSetup.js -r babel-register src/components/ReactSelectSuggest/test/*.test.js --require ignore-styles",
-    "test:watch": "tape-watch tools/testSetup.js -r babel-register src/components/ReactSelectSuggest/test/*.test.js --require ignore-styles",
+    "test": "tape tools/testSetup.js -r babel-register src/ReactSelectSuggest/test/*.test.js --require ignore-styles",
+    "test:watch": "tape-watch tools/testSetup.js -r babel-register src/ReactSelectSuggest/test/*.test.js --require ignore-styles",
     "build": "npm run build:lib",
     "build:lib": "babel src --out-dir lib --copy-files",
     "clean": "rimraf lib",

@@ -19,20 +19,20 @@ const setup = (props) => {
 
     const component = mount(
         <ReactSelectSuggest
-        placeholder="hello"
-        showAttr="title"
-        url="https://jsonplaceholder.typicode.com/posts"
-        {...props}/>
+            placeholder="hello"
+            showAttr="title"
+            url="https://jsonplaceholder.typicode.com/posts"
+            {...props}/>
     );
 
     const componentStyle = mount(
         <ReactSelectSuggest
-        placeholder="hello"
-        showAttr="title"
-        url="https://jsonplaceholder.typicode.com/posts"
-        boxHeight="200"
-        boxWidth="400"
-        {...props}/>
+            placeholder="hello"
+            showAttr="title"
+            url="https://jsonplaceholder.typicode.com/posts"
+            boxHeight="200"
+            boxWidth="400"
+            {...props}/>
     );
 
     fixtures.componentWithoutPlaceholder = componentWithoutPlaceholder;
@@ -385,39 +385,29 @@ test('while it is fetching it display a loader', (assert) => {
     assert.end();
 });
 
-/*
-test('clicked value should be shown in input field', (assert) => {
+
+test('error message is visible', (assert) => {
     const props = {
             reactSelectSuggest : {
-                inputValue: 'hello',
-                searchResults: [
-                    {
-                        title : 'hell'
-                    },{
-                        title: 'hello'
-                    }
-                ],
-                showDropDown: true
+                error: false
             }
         },
         fixture = setup(props),
         component = fixture.component,
         mainNode = component.find('.react-select-suggest'),
-        mainInputNode = mainNode.find('.react-select-suggest-input-main'),
-        inputSelectedField = mainInputNode.find('.react-select-selected'),
-        inputField = mainInputNode.find('input'),
-        dropDown = component.find('.react-select-suggest .react-select-drop-down'),
-        dropDownElements = dropDown.find('li');
+        errorNode = mainNode.find('.react-select-box-errors');
 
-    assert.equal(inputField.props().style.display, 'block', 'input field should be visible');
-    assert.equal(inputSelectedField.props().style.display, 'none', 'input-selected field should be hidden');
-    
-    dropDownElements.first().simulate('click');
-    
-    assert.equal(inputField.props().style.display, 'none', 'input field should be hidden');
-    assert.equal(inputSelectedField.props().style.display, 'block', 'input-selected field should be visible');
+    assert.equal(errorNode.props().style.display, 'none', 'Error node should not be visible');
+
+    component.setProps({
+        reactSelectSuggest : {
+            error : 'An error occured'
+        }
+    });
+
+    assert.equal(errorNode.props().style.display, 'block', 'Error node should be visible');
+    assert.equal(errorNode.text(), 'An error occured', 'Error node contains correct error message');
 
     teardown(fixture);
     assert.end(); 
 });
-*/

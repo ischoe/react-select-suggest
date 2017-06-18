@@ -5,11 +5,11 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { ReactSelectSuggest, ReactSelectSuggestActions } from './export';
 
-const App = ({reactSelectSuggest, actions}) => (
+const Demo = ({reactSelectSuggest, actions}) => (
   <div>
     <ReactSelectSuggest 
         placeholder="Search..."
-        url="https://jsonplaceholder.typicode.com/posts"
+        url="https://jsonplaceholder.typicode.com/todos"
         showAttr="title"
         boxHeight= "200"
         boxWidth="500"
@@ -26,7 +26,7 @@ const mapDispatchToProps = dispatch => ({
     actions: bindActionCreators({...ReactSelectSuggestActions}, dispatch)
 });
 
-App.propTypes = {
+Demo.propTypes = {
     actions: PropTypes.object.isRequired,
     reactSelectSuggest: PropTypes.object.isRequired
 };
@@ -34,4 +34,4 @@ App.propTypes = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(App);
+)(Demo);

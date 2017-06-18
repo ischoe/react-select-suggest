@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
-import App from './App';
+import Demo from './Demo';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
@@ -14,15 +14,15 @@ const store = createStore(reducer, middleWare);
 render(
   <AppContainer>
     <Provider store={store}>
-      <App />
+      <Demo />
     </Provider>  
   </AppContainer>,
   document.getElementById('main-app')
 );
 
 if (module.hot) {
-  module.hot.accept('./App', () => {
-    const NextApp = require('./App').default;
+  module.hot.accept('./Demo', () => {
+    const NextApp = require('./Demo').default;
     render(
       <AppContainer>
         <NextApp/>
