@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Auto-Suggest-Box built with React & Redux",
   "main": "lib/export.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ischoe/react-select-suggest"
+  },
   "scripts": {
     "start": "npm run open:src",
     "open:src": "babel-node tools/srcServer.js",
