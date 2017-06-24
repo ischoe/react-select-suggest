@@ -38,8 +38,8 @@ const Demo = () => (
 ```
 
 # Options
-url : Required - the uri which needs to return json data
-showAttr : Required - the attribute which contains the data you want to display
-placeholder : Optional - a string which is the placeholder for the empty input field
-boxHeight : Optional - the height of the opening dropdown box, if not specified it is always as high as the results
+url : Required - the uri which needs to return json data  
+showAttr : Required - the attribute which contains the data you want to display  
+placeholder : Optional - a string which is the placeholder for the empty input field  
+boxHeight : Optional - the height of the opening dropdown box, if not specified it is always as high as the results  
 boxWidth : Optional - the width of the whole component, if not specified it is as width as the parent div
