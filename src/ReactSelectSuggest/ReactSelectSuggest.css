@@ -4,6 +4,8 @@
 
 .react-select-drop-down, .react-select-box {
     display: none;
+    z-index: 1000;
+    position: absolute;
 }
 
 .react-select-drop-down, .react-select-box-errors {

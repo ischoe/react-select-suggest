@@ -15,7 +15,7 @@
     "build": "npm run build:lib",
     "build:lib": "babel src --out-dir lib --copy-files",
     "clean": "rimraf lib",
-    "lint": "node_modules/.bin/esw src",
+    "lint": "esw src",
     "lint:watch": "npm run lint -- --watch",
     "check": "npm-run-all --parallel lint:watch test:watch"
   },
@@ -63,8 +63,6 @@
     "react-hot-loader": "3.0.0-beta.7",
     "react-modal": "1.7.7",
     "react-redux": "5.0.5",
-    "react-router": "4.1.1",
-    "react-router-redux": "4.0.8",
     "react-unit": "3.0.0",
     "redux": "3.6.0",
     "redux-logger": "3.0.6",

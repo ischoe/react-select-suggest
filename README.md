@@ -6,37 +6,40 @@ Adds a suggest-select-box, uses react and redux
 ```
 npm install --save react-select-suggest
 ```
- add the reducer :
- 
- ```
- import { ReactSelectSuggestReducer } from 'react-select-suggest';
+# if you are using Redux
+
+add the reducer :
+```
+import { combineReducers } from 'redux';
+import { ReactSelectSuggestReducer } from 'react-select-suggest';
 
 const rootReducer = combineReducers({
-    ReactSelectSuggestReducer
+    reactSelectReducer: ReactSelectSuggestReducer
 });
- ```
-  add the component :
-```
-import { ReactSelectSuggest, ReactSelectSuggestActions } from 'react-select-suggest';
 
-const Demo = ({reactSelectSuggest, actions}) => (
+```
+
+# No matter if your are using redux or not
+
+add the component :
+
+```
+
+const Demo = () => (
   <div>
     <ReactSelectSuggest
         placeholder="Search..."
         url="your_url"
         showAttr="your_attribute"
-        boxHeight= "100"
-        boxWidth="300"
-        reactSelectSuggest={reactSelectSuggest}
-        actions={actions}/>
+        boxHeight="100"
+        boxWidth="300"/>
   </div>
 )
-
-const mapStateToProps = state => ({
-    reactSelectSuggest: state.ReactSelectSuggestReducer
-});
-
-const mapDispatchToProps = dispatch => ({
-    actions: bindActionCreators({...ReactSelectSuggestActions}, dispatch)
-});
 ```
+
+# Options
+url : Required - the uri which needs to return json data
+showAttr : Required - the attribute which contains the data you want to display
+placeholder : Optional - a string which is the placeholder for the empty input field
+boxHeight : Optional - the height of the opening dropdown box, if not specified it is always as high as the results
+boxWidth : Optional - the width of the whole component, if not specified it is as width as the parent div

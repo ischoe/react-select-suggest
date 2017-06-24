@@ -4,10 +4,11 @@ const initialState = {
     fetching: false,
     showDropDown: false,
     searchResults: [],
-    error: false
+    error: false,
+    selectedItem: ''
 };
 
-export default function reactSelectSuggest(state = initialState, action) {
+export default function reactSelectReducer(state = initialState, action) {
   switch (action.type) {
     case 'SHOW_PLACEHOLDER':
       state = {
@@ -85,4 +86,4 @@ export default function reactSelectSuggest(state = initialState, action) {
       break;
   }
   return state;
-} 
+}

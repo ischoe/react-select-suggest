@@ -1,9 +1,10 @@
 import ReactSelectSuggestReducer from './ReactSelectSuggest/ReactSelectSuggestReducer';
 import * as ReactSelectSuggestActions from './ReactSelectSuggest/ReactSelectSuggestActions';
-import ReactSelectSuggest from './ReactSelectSuggest/ReactSelectSuggest';
+import ReactSelectSuggestRedux, { ReactSelectSuggest } from './ReactSelectSuggest/ReactSelectSuggest';
 
 export {
   ReactSelectSuggestActions,
+  ReactSelectSuggestRedux,
   ReactSelectSuggest,
   ReactSelectSuggestReducer
 };

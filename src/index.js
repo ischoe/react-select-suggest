@@ -8,26 +8,12 @@ import thunk from 'redux-thunk';
 import { ReactSelectSuggestReducer } from './export';
 
 const middleWare = applyMiddleware(thunk);
-const reducer = combineReducers({ReactSelectSuggestReducer});
+const reducer = combineReducers({reactSelectReducer : ReactSelectSuggestReducer});
 const store = createStore(reducer, middleWare);
 
 render(
   <AppContainer>
-    <Provider store={store}>
       <Demo />
-    </Provider>  
   </AppContainer>,
   document.getElementById('main-app')
 );
-
-if (module.hot) {
-  module.hot.accept('./Demo', () => {
-    const NextApp = require('./Demo').default;
-    render(
-      <AppContainer>
-        <NextApp/>
-      </AppContainer>,
-      document.getElementById('main-app')
-    );
-  });
-}

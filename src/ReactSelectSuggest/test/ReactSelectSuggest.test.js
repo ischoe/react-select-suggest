@@ -1,38 +1,40 @@
 import test from 'tape';
 import { shallow, mount } from 'enzyme';
 import React from 'react';
-import ReactSelectSuggest from '../ReactSelectSuggest';
+import { ReactSelectSuggest } from '../ReactSelectSuggest';
 import sinon from 'sinon';
 import * as ReactSelectSuggestActions from '../ReactSelectSuggestActions';
 
+
 const setup = (props) => {
     const fixtures = {};
-
+    
     props.actions = ReactSelectSuggestActions;
+    props.reduxComponent = true;
 
     const componentWithoutPlaceholder = mount(
         <ReactSelectSuggest
-        showAttr="title"
-        url="https://jsonplaceholder.typicode.com/posts"
-        {...props}/>
+                showAttr="title"
+                url="https://jsonplaceholder.typicode.com/posts"
+                {...props}/>
     );
 
     const component = mount(
         <ReactSelectSuggest
-            placeholder="hello"
-            showAttr="title"
-            url="https://jsonplaceholder.typicode.com/posts"
-            {...props}/>
+                placeholder="hello"
+                showAttr="title"
+                url="https://jsonplaceholder.typicode.com/posts"
+                {...props}/>       
     );
 
     const componentStyle = mount(
         <ReactSelectSuggest
-            placeholder="hello"
-            showAttr="title"
-            url="https://jsonplaceholder.typicode.com/posts"
-            boxHeight="200"
-            boxWidth="400"
-            {...props}/>
+                placeholder="hello"
+                showAttr="title"
+                url="https://jsonplaceholder.typicode.com/posts"
+                boxHeight="200"
+                boxWidth="400"
+                {...props}/>
     );
 
     fixtures.componentWithoutPlaceholder = componentWithoutPlaceholder;
@@ -47,7 +49,7 @@ const teardown = (fixtures) => {
 
 test('react-select-suggest markup generated correctly', (assert) => {
     const props = {
-            reactSelectSuggest : {}
+            reactSelectReducer : {}
         },
         fixture = setup(props),
         component = fixture.component,
@@ -72,9 +74,10 @@ test('react-select-suggest markup generated correctly', (assert) => {
     assert.end();
 });
 
+
 test('placeholder field can be configured', (assert) => {
     const props = {
-            reactSelectSuggest : {}
+            reactSelectReducer : {}
         },
         fixture = setup(props),
         component = fixture.componentWithoutPlaceholder,
@@ -84,7 +87,7 @@ test('placeholder field can be configured', (assert) => {
 
     component.setProps({
         placeholder : 'hi',
-        reactSelectSuggest: {
+        reactSelectReducer: {
             showPlaceholder: true
         }
     });
@@ -98,7 +101,7 @@ test('placeholder field can be configured', (assert) => {
 
 test('focus is on input field will set showDropDown correctly', (assert) => {
     const emptyProps = {
-            reactSelectSuggest : {}
+            reactSelectReducer : {}
         },
         fixture = setup(emptyProps),
         component = fixture.component,
@@ -115,7 +118,7 @@ test('focus is on input field will set showDropDown correctly', (assert) => {
 
 test('placeholder field should be empty when focus is on input field', (assert) => {
     const emptyProps = {
-            reactSelectSuggest : {}
+            reactSelectReducer : {}
         },
         fixture = setup(emptyProps),
         component = fixture.component,
@@ -134,7 +137,7 @@ test('placeholder field should be empty when focus is on input field', (assert) 
 
     showSpy = sinon.spy(component.props().actions, 'showPlaceholder');
     component.setProps({
-        reactSelectSuggest : {
+        reactSelectReducer : {
             inputValue : 'ok'
         }
     });
@@ -148,7 +151,7 @@ test('placeholder field should be empty when focus is on input field', (assert) 
 
 test('dropdown should be hidden when no results found or the focus is lost', (assert) => {
     const emptyProps = {
-            reactSelectSuggest : {
+            reactSelectReducer : {
                 inputValue: 'hello',
                 searchResults: []
             }
@@ -163,7 +166,7 @@ test('dropdown should be hidden when no results found or the focus is lost', (as
     );
 
     component.setProps({
-        reactSelectSuggest: {
+        reactSelectReducer: {
             searchResults: [
                 {
                     title : 'hell'
@@ -187,7 +190,7 @@ test('dropdown should be hidden when no results found or the focus is lost', (as
     );
 
     component.setProps({
-        reactSelectSuggest: {
+        reactSelectReducer: {
             searchResults: [
                 {
                     title : 'hell'
@@ -211,7 +214,7 @@ test('dropdown should be hidden when no results found or the focus is lost', (as
 
 test('when results found the drop down should be displayed', (assert) => {
     const props = {
-            reactSelectSuggest : {
+            reactSelectReducer : {
                 inputValue: 'hello',
                 searchResults: [
                     {
@@ -238,7 +241,7 @@ test('when results found the drop down should be displayed', (assert) => {
 
 test('result can be configured', (assert) => {
     const props = {
-            reactSelectSuggest : {}
+            reactSelectReducer : {}
         },
         fixture = setup(props),
         component = fixture.component;
@@ -257,7 +260,7 @@ test('result can be configured', (assert) => {
 
 test('changing the input value is calling the ajax function correctly', (assert) => {
     const emptyProps = {
-            reactSelectSuggest : {
+            reactSelectReducer : {
                 inputValue: ''
             }
         },
@@ -267,7 +270,7 @@ test('changing the input value is calling the ajax function correctly', (assert)
     const searchSpy = sinon.spy(ReactSelectSuggestActions, 'searchForResults');
 
     component.setProps({
-        reactSelectSuggest : {
+        reactSelectReducer : {
             inputValue: 'a'
         }
     });
@@ -290,7 +293,7 @@ test('changing the input value is calling the ajax function correctly', (assert)
 
 test('clearing the input will clear the searchresult', (assert) => {
     const props = {
-            reactSelectSuggest : {
+            reactSelectReducer : {
                 inputValue: 'hello',
                 searchResults: [
                     {
@@ -311,9 +314,10 @@ test('clearing the input will clear the searchresult', (assert) => {
     const clearInputSpy = sinon.spy(ReactSelectSuggestActions, 'clearSearchResults');
 
     component.setProps({
-        reactSelectSuggest : {
+        reactSelectReducer : {
             inputValue: ''
-        }
+        },
+        reduxComponent: true
     });
 
     assert.equal(clearInputSpy.called, true, 'clear input has been called');
@@ -325,7 +329,7 @@ test('clearing the input will clear the searchresult', (assert) => {
 
 test('height and width are configurable', (assert) => {
     const props = {
-            reactSelectSuggest : {}
+            reactSelectReducer : {}
         },
         fixture = setup(props),
         component = fixture.componentStyle,
@@ -353,7 +357,7 @@ test('height and width are configurable', (assert) => {
 
 test('while it is fetching it display a loader', (assert) => {
     const props = {
-            reactSelectSuggest : {
+            reactSelectReducer : {
                 inputValue: 'hello',
                 searchResults: [
                     {
@@ -374,7 +378,7 @@ test('while it is fetching it display a loader', (assert) => {
     assert.equal(inputAjaxLoader.props().style.display, 'none', 'Ajax loader should be hidden');
 
     component.setProps({
-        reactSelectSuggest : {
+        reactSelectReducer : {
             fetching : true
         }
     });
@@ -388,7 +392,7 @@ test('while it is fetching it display a loader', (assert) => {
 
 test('error message is visible', (assert) => {
     const props = {
-            reactSelectSuggest : {
+            reactSelectReducer : {
                 error: false
             }
         },
@@ -400,7 +404,7 @@ test('error message is visible', (assert) => {
     assert.equal(errorNode.props().style.display, 'none', 'Error node should not be visible');
 
     component.setProps({
-        reactSelectSuggest : {
+        reactSelectReducer : {
             error : 'An error occured'
         }
     });
