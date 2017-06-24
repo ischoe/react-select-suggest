@@ -13,7 +13,9 @@ const store = createStore(reducer, middleWare);
 
 render(
   <AppContainer>
+    <Provider store={store}>
       <Demo />
+    </Provider>  
   </AppContainer>,
   document.getElementById('main-app')
 );

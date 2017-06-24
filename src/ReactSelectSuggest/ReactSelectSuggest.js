@@ -123,7 +123,7 @@ export class ReactSelectSuggest extends Component {
     }
 
     handleItemClick(e) {
-        if(this.state.reduxComponent) {
+        if(this.props.reduxComponent) {
             this.props.actions.selectItem(e.target.innerText);
             this.props.actions.hideDropDown();
         } else {
@@ -135,7 +135,7 @@ export class ReactSelectSuggest extends Component {
     }
 
     handleSelectedClick() {
-        if(this.state.reduxComponent) {
+        if(this.props.reduxComponent) {
             this.props.actions.selectItem(false);
             this.props.actions.showDropDown();
         } else {
@@ -180,7 +180,7 @@ export class ReactSelectSuggest extends Component {
     handleChange(e) {
         const innerText = e.target.value;
 
-        if(this.state.reduxComponent) {
+        if(this.props.reduxComponent) {
             this.props.actions.changeInputValue(innerText);
         } else {
             this.setState({
