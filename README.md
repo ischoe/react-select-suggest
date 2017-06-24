@@ -19,11 +19,31 @@ const rootReducer = combineReducers({
 
 ```
 
-# No matter if your are using redux or not
-
 add the component :
 
 ```
+
+import { ReactSelectSuggestRedux } from 'react-select-suggest';
+
+const Demo = () => (
+  <div>
+    <ReactSelectSuggestRedux
+        placeholder="Search..."
+        url="your_url"
+        showAttr="your_attribute"
+        boxHeight="100"
+        boxWidth="300"/>
+  </div>
+)
+```
+
+# if your are NOT using Redux
+
+just add the component :
+
+```
+
+import { ReactSelectSuggest } from 'react-select-suggest';
 
 const Demo = () => (
   <div>
