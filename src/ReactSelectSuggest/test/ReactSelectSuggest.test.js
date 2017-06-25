@@ -259,12 +259,13 @@ test('result can be configured', (assert) => {
 });
 
 test('changing the input value is calling the ajax function correctly', (assert) => {
-    const emptyProps = {
+    const props = {
             reactSelectReducer : {
                 inputValue: ''
-            }
+            },
+            namespace : 'reducer1'
         },
-        fixture = setup(emptyProps),
+        fixture = setup(props),
         component = fixture.component;
 
     const searchSpy = sinon.spy(ReactSelectSuggestActions, 'searchForResults');
@@ -276,7 +277,7 @@ test('changing the input value is calling the ajax function correctly', (assert)
     });
 
     assert.equal(
-        searchSpy.calledWith('a', 
+        searchSpy.calledWith('reducer1','a', 
             {
                 url:'https://jsonplaceholder.typicode.com/posts', 
                 showAttr: 'title'

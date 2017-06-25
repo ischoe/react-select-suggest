@@ -5,12 +5,13 @@ import * as ReactSelectSuggestActions from '../ReactSelectSuggestActions';
 
 test('calling the search function will start fetching', (assert) => {
   
-  const dispatch = sinon.spy();
+  const dispatch = sinon.spy(),
+    namespace = 'reducer1';
 
-  ReactSelectSuggestActions.searchForResults()(dispatch);
+  ReactSelectSuggestActions.searchForResults(namespace)(dispatch);
 
   assert.equal(
-    dispatch.calledWith({type: 'SEARCH_RESULTS_START'}),
+    dispatch.calledWith({type: namespace+'SEARCH_RESULTS_START'}),
     true,
     'SEARCH_RESULTS_START has been called');
 

@@ -8,7 +8,11 @@ import thunk from 'redux-thunk';
 import { ReactSelectSuggestReducer } from './export';
 
 const middleWare = applyMiddleware(thunk);
-const reducer = combineReducers({reactSelectReducer : ReactSelectSuggestReducer});
+const reducer = combineReducers({
+  reactSelectReducer : ReactSelectSuggestReducer(),
+  reactSelectReducer1 : ReactSelectSuggestReducer('reactSelectReducer1'),
+  reactSelectReducer2 : ReactSelectSuggestReducer('reactSelectReducer2')
+});
 const store = createStore(reducer, middleWare);
 
 render(

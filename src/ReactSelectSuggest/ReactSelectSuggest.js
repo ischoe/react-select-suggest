@@ -34,7 +34,7 @@ export class ReactSelectSuggest extends Component {
 
     componentDidMount () {
         const { boxWidth } = this.props,
-            { inputField, mainBox } = this.refs,
+            { inputField, mainBox, dropDown } = this.refs,
             { offsetWidth: inputOffset } = inputField,
             { offsetWidth: mainOffset } = mainBox,
             boxWidthValue = parseInt(boxWidth);
@@ -42,16 +42,23 @@ export class ReactSelectSuggest extends Component {
         if (boxWidth) {
             if(inputOffset > boxWidthValue) {
                 const offset = inputOffset - boxWidthValue,
-                    inputOffsetInPx = (boxWidthValue - offset) + 'px';
+                    inputOffsetInPx = (boxWidthValue - offset) + 'px',
+                    dropDownOffsetInPx = (boxWidthValue - offset/2) + 'px';
 
                 inputField.style.width = inputOffsetInPx;
+                dropDown.style.width = dropDownOffsetInPx;
             }
         } else {
-            const { clientWidth, offsetWidth } = inputField,
-                    offset = offsetWidth - clientWidth,
-                    inputOffsetInPx = (mainOffset - offset) + 'px';
+            const inputOffsetInPx = mainOffset + 'px';
 
             inputField.style.width = inputOffsetInPx;
+            dropDown.style.width = inputOffsetInPx;
+
+            const offset = inputField.offsetWidth - parseInt(inputField.style.width);
+            if(offset > 0) {
+                inputField.style.width = (parseInt(inputField.style.width) - offset) + 'px';
+                dropDown.style.width = mainOffset - (offset/2)  + 'px';
+            }
         }
     }
 
@@ -62,9 +69,9 @@ export class ReactSelectSuggest extends Component {
         if(reduxComponent) {
             if(prevProps.reactSelectReducer.inputValue !== inputValue) {
                 if(inputValue && inputValue.length > 0) {
-                    this.props.actions.searchForResults(inputValue, this.buildRequestData());
+                    this.props.actions.searchForResults(this.props.namespace, inputValue, this.buildRequestData());
                 } else {
-                    this.props.actions.clearSearchResults();
+                    this.props.actions.clearSearchResults(this.props.namespace);
                 }
             }
         } else {
@@ -97,15 +104,15 @@ export class ReactSelectSuggest extends Component {
             .catch(error => {
                 self.setState({
                     fetching: false,
-                    error: error
+                    error: error.message
                 });
             });
     }
 
     enableFocus() {
         if(this.props.reduxComponent) {
-            this.props.actions.hidePlaceholder();
-            this.props.actions.showDropDown();
+            this.props.actions.hidePlaceholder(this.props.namespace);
+            this.props.actions.showDropDown(this.props.namespace);
         } else {
             this.setState({
                 showPlaceholder: false,
@@ -124,8 +131,8 @@ export class ReactSelectSuggest extends Component {
 
     handleItemClick(e) {
         if(this.props.reduxComponent) {
-            this.props.actions.selectItem(e.target.innerText);
-            this.props.actions.hideDropDown();
+            this.props.actions.selectItem(this.props.namespace, e.target.innerText);
+            this.props.actions.hideDropDown(this.props.namespace);
         } else {
             this.setState({
                 selectedItem: e.target.innerText,
@@ -136,8 +143,8 @@ export class ReactSelectSuggest extends Component {
 
     handleSelectedClick() {
         if(this.props.reduxComponent) {
-            this.props.actions.selectItem(false);
-            this.props.actions.showDropDown();
+            this.props.actions.selectItem(this.props.namespace, false);
+            this.props.actions.showDropDown(this.props.namespace);
         } else {
             this.setState({
                 selectedItem: false,
@@ -152,7 +159,7 @@ export class ReactSelectSuggest extends Component {
         
         if(!inputValue || inputValue.length === 0) {
             if(reduxComponent) {
-                this.props.actions.showPlaceholder();
+                this.props.actions.showPlaceholder(this.props.namespace);
             } else {
                 this.setState({
                     showPlaceholder: true
@@ -161,7 +168,7 @@ export class ReactSelectSuggest extends Component {
         }
 
         if(reduxComponent) {
-            this.props.actions.hideDropDown();
+            this.props.actions.hideDropDown(this.props.namespace);
         } else {
             this.setState({
                 showDropDown: false
@@ -181,7 +188,7 @@ export class ReactSelectSuggest extends Component {
         const innerText = e.target.value;
 
         if(this.props.reduxComponent) {
-            this.props.actions.changeInputValue(innerText);
+            this.props.actions.changeInputValue(this.props.namespace, innerText);
         } else {
             this.setState({
                 inputValue: innerText
@@ -239,7 +246,8 @@ export class ReactSelectSuggest extends Component {
                         }
                         ref="inputField"/>
                 </div>
-                <div className="react-select-drop-down" 
+                <div className="react-select-drop-down"
+                    ref="dropDown"
                     style={
                         Object.assign(
                             this.checkDisplay(resultAvailable && showDropDown),
@@ -272,6 +280,7 @@ export class ReactSelectSuggest extends Component {
 ReactSelectSuggest.propTypes = {
     url: PropTypes.string.isRequired,
     showAttr: PropTypes.string.isRequired,
+    namespace: PropTypes.string,
     boxWidth: PropTypes.string,
     boxHeight: PropTypes.string,
     placeholder: PropTypes.string,
@@ -281,12 +290,16 @@ ReactSelectSuggest.propTypes = {
 };
 
 
-const mapStateToProps = state => ({
-    reactSelectReducer: state.reactSelectReducer,
-    reduxComponent: true
-});
+const mapStateToProps = (state, ownProps) => {
+    const namespace = ownProps.namespace || 'reactSelectReducer';
+    return {
+        reactSelectReducer: state[namespace],
+        reduxComponent: true,
+        namespace: namespace
+    };
+};
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
     actions: bindActionCreators({...ReactSelectSuggestActions}, dispatch)
 });
 

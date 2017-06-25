@@ -14,7 +14,7 @@ import { combineReducers } from 'redux';
 import { ReactSelectSuggestReducer } from 'react-select-suggest';
 
 const rootReducer = combineReducers({
-    reactSelectReducer: ReactSelectSuggestReducer
+    reactSelectReducer : ReactSelectSuggestReducer()
 });
 
 ```
@@ -55,6 +55,30 @@ const Demo = () => (
         boxWidth="300"/>
   </div>
 )
+```
+
+# if you are using Redux and want to add multiple components on the same page
+```
+const rootReducer = combineReducers({
+    your_namespace_1 : ReactSelectSuggestReducer('your_namespace_1'),
+    your_namespace_2 : ReactSelectSuggestReducer('your_namespace_2')
+});
+
+<ReactSelectSuggestRedux
+        placeholder="Search..."
+        url="your_url"
+        showAttr="your_attribute"
+        boxHeight="100"
+        boxWidth="300"
+        namespace="your_namespace_1"/>
+        
+<ReactSelectSuggestRedux
+        placeholder="Search..."
+        url="your_url"
+        showAttr="your_attribute"
+        boxHeight="100"
+        boxWidth="300"
+        namespace="your_namespace_2"/>        
 ```
 
 # Options

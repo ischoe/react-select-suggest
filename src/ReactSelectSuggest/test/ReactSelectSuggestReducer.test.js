@@ -2,14 +2,16 @@ import test from 'tape';
 import sinon from 'sinon';
 import ReactSelectSuggestReducer from '../ReactSelectSuggestReducer';
 
+const namespace = 'reducer1';
+
 test('SHOW_PLACEHOLDER can be set', (assert) => {
   const action = {
-            type: 'SHOW_PLACEHOLDER'
+            type: namespace+'SHOW_PLACEHOLDER'
         },
         state = {};
 
   assert.deepEqual(
-    ReactSelectSuggestReducer(state, action), 
+    ReactSelectSuggestReducer(namespace)(state, action), 
     {showPlaceholder: true},
     'SHOW_PLACEHOLDER sets showplaceholder to true');  
 
@@ -18,12 +20,12 @@ test('SHOW_PLACEHOLDER can be set', (assert) => {
 
 test('HIDE_PLACEHOLDER can be set', (assert) => {
   const action = {
-            type: 'HIDE_PLACEHOLDER'
+            type: namespace+'HIDE_PLACEHOLDER'
         },
         state = {};
 
   assert.deepEqual(
-    ReactSelectSuggestReducer(state, action), 
+    ReactSelectSuggestReducer(namespace)(state, action), 
     {showPlaceholder: false},
     'HIDE_PLACEHOLDER sets showplaceholder to false');  
 
@@ -32,13 +34,13 @@ test('HIDE_PLACEHOLDER can be set', (assert) => {
 
 test('INPUT_CHANGE works', (assert) => {
   const action = {
-            type: 'INPUT_CHANGE',
+            type: namespace+'INPUT_CHANGE',
             inputValue: 'ok'
         },
         state = {};
 
   assert.deepEqual(
-    ReactSelectSuggestReducer(state, action), 
+    ReactSelectSuggestReducer(namespace)(state, action),
     {inputValue: 'ok'},
     'INPUT_CHANGE can change the inputValue');  
 
@@ -47,14 +49,14 @@ test('INPUT_CHANGE works', (assert) => {
 
 test('HIDE_PLACEHOLDER can be set', (assert) => {
   const action = {
-            type: 'HIDE_PLACEHOLDER'
+            type: namespace+'HIDE_PLACEHOLDER'
         },
         state = {
             showPlaceholder: false
         };
 
   assert.deepEqual(
-    ReactSelectSuggestReducer(state, action), 
+    ReactSelectSuggestReducer(namespace)(state, action),
     {showPlaceholder: false},
     'HIDE_PLACEHOLDER sets showplaceholder to false');  
 
@@ -63,12 +65,12 @@ test('HIDE_PLACEHOLDER can be set', (assert) => {
 
 test('SEARCH_RESULTS_START can search for results', (assert) => {
   const action = {
-            type: 'SEARCH_RESULTS_START'
+            type: namespace+'SEARCH_RESULTS_START'
         },
         state = {};
 
   assert.deepEqual(
-    ReactSelectSuggestReducer(state, action), 
+    ReactSelectSuggestReducer(namespace)(state, action),
     {fetching: true},
     'SEARCH_RESULTS_START starts fetching');  
 
@@ -77,13 +79,13 @@ test('SEARCH_RESULTS_START can search for results', (assert) => {
 
 test('SEARCH_RESULTS_FINISHED returns the results', (assert) => {
   const action = {
-            type: 'SEARCH_RESULTS_FINISHED',
+            type: namespace+'SEARCH_RESULTS_FINISHED',
             searchResults: ['123', '456']
         },
         state = {};
 
   assert.deepEqual(
-    ReactSelectSuggestReducer(state, action), 
+    ReactSelectSuggestReducer(namespace)(state, action),
     {
         fetching: false,
         searchResults: ['123', '456']
@@ -95,13 +97,13 @@ test('SEARCH_RESULTS_FINISHED returns the results', (assert) => {
 
 test('SEARCH_RESULTS_ERROR returns the error', (assert) => {
   const action = {
-            type: 'SEARCH_RESULTS_ERROR',
+            type: namespace+'SEARCH_RESULTS_ERROR',
             error: 'it failed'
         },
         state = {};
 
   assert.deepEqual(
-    ReactSelectSuggestReducer(state, action), 
+    ReactSelectSuggestReducer(namespace)(state, action), 
     {
         fetching: false,
         error : 'it failed'
@@ -113,13 +115,13 @@ test('SEARCH_RESULTS_ERROR returns the error', (assert) => {
 
 test('HIDE_DROPDOWN hides the dropdown', (assert) => {
   const action = {
-            type: 'HIDE_DROPDOWN',
+            type: namespace+'HIDE_DROPDOWN',
             showDropDown: false
         },
         state = {};
 
   assert.deepEqual(
-    ReactSelectSuggestReducer(state, action), 
+    ReactSelectSuggestReducer(namespace)(state, action),
     {showDropDown: false},
     'HIDE_DROPDOWN hides the drop down');  
 
@@ -128,13 +130,13 @@ test('HIDE_DROPDOWN hides the dropdown', (assert) => {
 
 test('SHOW_DROPDOWN shows the dropdown', (assert) => {
   const action = {
-            type: 'SHOW_DROPDOWN',
+            type: namespace+'SHOW_DROPDOWN',
             showDropDown: true
         },
         state = {};
 
   assert.deepEqual(
-    ReactSelectSuggestReducer(state, action), 
+    ReactSelectSuggestReducer(namespace)(state, action),
     {showDropDown: true},
     'SHOW_DROPDOWN shows the drop down');  
 
@@ -143,13 +145,13 @@ test('SHOW_DROPDOWN shows the dropdown', (assert) => {
 
 test('CLEAR_SEARCH_RESULTS removes the searchresults', (assert) => {
   const action = {
-            type: 'CLEAR_SEARCH_RESULTS',
+            type: namespace+'CLEAR_SEARCH_RESULTS',
             searchResults: []
         },
         state = {};
 
   assert.deepEqual(
-    ReactSelectSuggestReducer(state, action), 
+    ReactSelectSuggestReducer(namespace)(state, action),
     {searchResults: []},
     'CLEAR_SEARCH_RESULTS clears searchresults');  
 

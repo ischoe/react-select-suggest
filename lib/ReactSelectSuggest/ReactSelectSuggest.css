@@ -6,9 +6,11 @@
     display: none;
     z-index: 1000;
     position: absolute;
+    border: 1px solid;
+    overflow-y: scroll;
 }
 
-.react-select-drop-down, .react-select-box-errors {
+.react-select-box-errors {
     overflow-y: scroll;
     border: 1px solid;
 }

@@ -8,37 +8,38 @@ const initialState = {
     selectedItem: ''
 };
 
-export default function reactSelectReducer(state = initialState, action) {
+const reactSelectReducer = (name) => (state = initialState, action) => {
+  const namespace = name || 'reactSelectReducer';
   switch (action.type) {
-    case 'SHOW_PLACEHOLDER':
+    case namespace+'SHOW_PLACEHOLDER':
       state = {
           ...state, 
           showPlaceholder: true
       };
       break;
 
-    case 'HIDE_PLACEHOLDER':
+    case namespace+'HIDE_PLACEHOLDER':
       state = {
           ...state, 
           showPlaceholder: false
       };
       break;
 
-    case 'INPUT_CHANGE':
+    case namespace+'INPUT_CHANGE':
       state = {
           ...state, 
           inputValue: action.inputValue
       };
       break;
 
-    case 'SEARCH_RESULTS_START':
+    case namespace+'SEARCH_RESULTS_START':
       state = {
           ...state,
           fetching: true
       };
       break; 
 
-    case 'SEARCH_RESULTS_ERROR':
+    case namespace+'SEARCH_RESULTS_ERROR':
       state = {
           ...state,
           fetching: false,
@@ -46,7 +47,7 @@ export default function reactSelectReducer(state = initialState, action) {
       };
       break;
 
-    case 'SEARCH_RESULTS_FINISHED':
+    case namespace+'SEARCH_RESULTS_FINISHED':
       state = {
           ...state,
           fetching: false,
@@ -54,28 +55,28 @@ export default function reactSelectReducer(state = initialState, action) {
       };
       break;
 
-    case 'SHOW_DROPDOWN':
+    case namespace+'SHOW_DROPDOWN':
       state = {
           ...state, 
           showDropDown: true
       };
       break;
 
-    case 'HIDE_DROPDOWN':
+    case namespace+'HIDE_DROPDOWN':
       state = {
           ...state, 
           showDropDown: false
       };
       break;
 
-    case 'CLEAR_SEARCH_RESULTS':
+    case namespace+'CLEAR_SEARCH_RESULTS':
       state = {
           ...state,
           searchResults: []
       };
       break;
 
-    case 'SELECT_ITEM':
+    case namespace+'SELECT_ITEM':
       state = {
           ...state,
           selectedItem: action.selectedItem
@@ -86,4 +87,6 @@ export default function reactSelectReducer(state = initialState, action) {
       break;
   }
   return state;
-}
+};
+
+export default reactSelectReducer;
