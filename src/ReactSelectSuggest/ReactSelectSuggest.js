@@ -4,24 +4,18 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { render } from 'react-dom';
 import PropTypes from 'prop-types';
-import './ReactSelectSuggest.css';
+import './ReactSelectSuggestBasic.css';
 import ajaxLoader from './ajax-loader.gif';
 import * as ReactSelectSuggestActions from './ReactSelectSuggestActions';
+import defaultState from './ReactSelectInitialState';
+import ReactSelectSuggestItem from './ReactSelectSuggestItem';
 
 export class ReactSelectSuggest extends Component {
     constructor (props) {
         super(props);
 
         if(!this.props.reduxComponent) {
-            this.state = {
-                showPlaceholder: true,
-                inputValue: '',
-                fetching: false,
-                showDropDown: false,
-                searchResults: [],
-                error: false,
-                selectedItem: ''
-            };
+            this.state = defaultState;
         }
 
         this.handleSelectedClick = this.handleSelectedClick.bind(this);
@@ -30,52 +24,76 @@ export class ReactSelectSuggest extends Component {
         this.handleClick = this.handleClick.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleItemClick = this.handleItemClick.bind(this);
+        this.handleMouseOverItem = this.handleMouseOverItem.bind(this);
+        this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.handleMouseMove = this.handleMouseMove.bind(this);
+        this.handleMouseLeave = this.handleMouseLeave.bind(this);
+        this.handleClickArrow = this.handleClickArrow.bind(this);
+        this.handleClear = this.handleClear.bind(this);
+        this.mouseMoveCounter = 0;
+        this.inputFieldSelectedAfterReopen = false;
+    }
+
+    componentWillMount() {
+        if(typeof this.props.items !== 'undefined') {
+            this.setStateOrReduxAction({searchResults: this.props.items});
+        }
     }
 
     componentDidMount () {
-        const { boxWidth } = this.props,
-            { inputField, mainBox, dropDown } = this.refs,
+        const { inputField, mainBox } = this.refs,
             { offsetWidth: inputOffset } = inputField,
-            { offsetWidth: mainOffset } = mainBox,
-            boxWidthValue = parseInt(boxWidth);
+            { offsetWidth: mainOffset } = mainBox;
 
-        if (boxWidth) {
-            if(inputOffset > boxWidthValue) {
-                const offset = inputOffset - boxWidthValue,
-                    inputOffsetInPx = (boxWidthValue - offset) + 'px',
-                    dropDownOffsetInPx = (boxWidthValue - offset/2) + 'px';
+        this.resizeInputWidth(inputOffset, mainOffset);
+    }
 
-                inputField.style.width = inputOffsetInPx;
-                dropDown.style.width = dropDownOffsetInPx;
-            }
-        } else {
-            const inputOffsetInPx = mainOffset + 'px';
+    componentDidUpdate(prevProps, prevState) {
+        const { reduxComponent, freeTextSelection, items, showAttr } = this.props,
+            { inputValue, selectedItem, showDropDown, resetSelected, focusIndex } = this.getFromStateOrReduxProps(),
+            { inputField, dropDown } = this.refs,
+            prevInput = reduxComponent ? prevProps.reactSelectReducer.inputValue : prevState.inputValue;
+        
+        if(typeof items === 'undefined') {
+            this.searchForResults(inputValue, prevInput);
+        }
 
-            inputField.style.width = inputOffsetInPx;
-            dropDown.style.width = inputOffsetInPx;
-
-            const offset = inputField.offsetWidth - parseInt(inputField.style.width);
+        if(showDropDown && dropDown.offsetWidth > 0) {
+            const offset = inputField.offsetWidth - dropDown.offsetWidth;
             if(offset > 0) {
-                inputField.style.width = (parseInt(inputField.style.width) - offset) + 'px';
-                dropDown.style.width = mainOffset - (offset/2)  + 'px';
+                dropDown.style.width = (parseInt(dropDown.style.width) + offset) + 'px';
+            }
+        }
+        
+        if(this.inputFieldSelectedAfterReopen) {
+            inputField.select();
+            this.inputFieldSelectedAfterReopen = false;
+        }
+
+        if(focusIndex !== false && this.mouseMoveCounter === 0) {
+            const prevFocusIndex = reduxComponent ? prevProps.reactSelectReducer.focusIndex : prevState.focusIndex;
+
+            if(prevFocusIndex !== focusIndex) {
+                const focusElementTop = dropDown.getElementsByClassName('react-select-suggest-focus')[0];
+                if(focusElementTop && focusElementTop.offsetTop > dropDown.offsetHeight/2) {
+                    dropDown.scrollTop = focusElementTop.offsetTop - dropDown.offsetHeight/2;
+                }
             }
         }
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        const { reactSelectReducer, reduxComponent } = this.props,
-            { inputValue } = reduxComponent ? reactSelectReducer : this.state;
-
+    searchForResults(inputValue, prevInput) {
+        const { reduxComponent, namespace, actions } = this.props;
         if(reduxComponent) {
-            if(prevProps.reactSelectReducer.inputValue !== inputValue) {
+            if(prevInput !== inputValue) {
                 if(inputValue && inputValue.length > 0) {
-                    this.props.actions.searchForResults(this.props.namespace, inputValue, this.buildRequestData());
+                    actions.searchForResults(namespace, inputValue, this.buildRequestData());
                 } else {
-                    this.props.actions.clearSearchResults(this.props.namespace);
+                    actions.clearSearchResults(namespace);
                 }
             }
         } else {
-            if(prevState.inputValue !== inputValue) {
+            if(prevInput !== inputValue) {
                 if(inputValue && inputValue.length > 0) {
                     this.setState({
                         fetching: true
@@ -87,7 +105,65 @@ export class ReactSelectSuggest extends Component {
                     });
                 }
             }
-        }   
+        }
+    }
+
+    resizeInputWidth(inputOffset, mainOffset) {
+        const { boxWidth } = this.props,
+            { inputField, dropDown } = this.refs,
+            boxWidthValue = parseInt(boxWidth);
+
+        if (boxWidth) {
+            inputField.style.width = boxWidthValue + 'px';
+            dropDown.style.width = boxWidthValue + 'px';
+
+            if(inputField.offsetWidth > boxWidthValue) {
+                this.checkWidthAfterResize(boxWidthValue, inputField, dropDown);
+            }
+        } else {
+            inputField.style.width = mainOffset + 'px';
+            dropDown.style.width = mainOffset + 'px';
+            if(inputField.offsetWidth > mainOffset) {
+                this.checkWidthAfterResize(mainOffset, inputField, dropDown);
+            }
+        }
+    }
+
+    checkWidthAfterResize(mainWidth, inputField, dropDown) {
+        const offset = inputField.offsetWidth - mainWidth;
+        inputField.style.width = (parseInt(inputField.style.width) - offset) + 'px';
+        dropDown.style.width = (parseInt(inputField.style.width) - offset) + 'px';
+    }
+
+    getFromStateOrReduxProps() {
+        const { reactSelectReducer, reduxComponent } = this.props;
+        return reduxComponent ? reactSelectReducer : this.state;
+    }
+
+    setStateOrReduxAction(state) {
+        const { reduxComponent, namespace, actions } = this.props;
+        if(reduxComponent) {
+            const { 
+                focusIndex,
+                showPlaceholder,
+                showDropDown,
+                selectedItem,
+                inputValue,
+                searchResults
+            } = state;
+            if(typeof focusIndex !== 'undefined') actions.setFocusIndex(namespace, focusIndex);
+            if(typeof showPlaceholder !== 'undefined' && showPlaceholder === false) actions.hidePlaceholder(namespace);
+            if(typeof showPlaceholder !== 'undefined' && showPlaceholder === true) actions.showPlaceholder(namespace);
+            if(typeof showDropDown !== 'undefined' && showDropDown === true) actions.showDropDown(namespace);
+            if(typeof showDropDown !== 'undefined' && showDropDown === false) actions.hideDropDown(namespace);
+            if(typeof selectedItem !== 'undefined') actions.selectItem(namespace, selectedItem);
+            if(typeof inputValue !== 'undefined') actions.changeInputValue(namespace, inputValue);
+            if(typeof searchResults !== 'undefined') actions.searchResultsSuccess(namespace, searchResults);
+        } else {
+            this.setState({
+                ...state
+            });
+        }
     }
 
     fetchResults(inputValue, sendData) {
@@ -110,14 +186,35 @@ export class ReactSelectSuggest extends Component {
     }
 
     enableFocus() {
-        if(this.props.reduxComponent) {
-            this.props.actions.hidePlaceholder(this.props.namespace);
-            this.props.actions.showDropDown(this.props.namespace);
-        } else {
-            this.setState({
-                showPlaceholder: false,
-                showDropDown: true
-            });
+        this.setStateOrReduxAction({showPlaceholder: false, showDropDown: true});
+    }
+
+    closeDropDown() {
+        const { reduxComponent, freeTextSelection } = this.props,
+            { inputValue, selectedItem, showDropDown } = this.getFromStateOrReduxProps();
+
+        if(showDropDown !== false) {
+            if(inputValue.length === 0) {
+                if(selectedItem) {
+                    this.selectItem(selectedItem);
+                } else {
+                    this.selectItem(false);
+                }
+            } else {
+                if(freeTextSelection === false) {
+                    if(selectedItem) {
+                        this.selectItem(selectedItem);
+                    } else {
+                        this.selectItem(false);
+                    }
+                } else {
+                    if(selectedItem) {
+                        this.selectItem(selectedItem);
+                    } else {
+                        this.selectItem(inputValue);
+                    }
+                }
+            }
         }
     }
 
@@ -129,51 +226,126 @@ export class ReactSelectSuggest extends Component {
         this.enableFocus();
     }
 
-    handleItemClick(e) {
-        if(this.props.reduxComponent) {
-            this.props.actions.selectItem(this.props.namespace, e.target.innerText);
-            this.props.actions.hideDropDown(this.props.namespace);
+    handleClear() {
+        this.selectItem(false);
+    }
+
+    handleClickArrow() {
+        const { inputField } = this.refs, 
+            { showDropDown } = this.getFromStateOrReduxProps();
+        if(showDropDown) {
+            this.closeDropDown();
         } else {
-            this.setState({
-                selectedItem: e.target.innerText,
-                showDropDown: false
-            });
+            this.enableFocus();
+            this.inputFieldSelectedAfterReopen = true;
         }
     }
 
-    handleSelectedClick() {
-        if(this.props.reduxComponent) {
-            this.props.actions.selectItem(this.props.namespace, false);
-            this.props.actions.showDropDown(this.props.namespace);
-        } else {
-            this.setState({
-                selectedItem: false,
-                showDropDown: true
-            });
+    handleMouseLeave() {
+        const { showDropDown} = this.getFromStateOrReduxProps();
+        if(showDropDown === true) {
+            this.setStateOrReduxAction({focusIndex: false});
         }
     }
 
-    handleBlur(e) {
-        const { reactSelectReducer, reduxComponent } = this.props,
-            { inputValue, selectedItem } = reduxComponent ? reactSelectReducer : this.state;
-        
-        if(!inputValue || inputValue.length === 0) {
-            if(reduxComponent) {
-                this.props.actions.showPlaceholder(this.props.namespace);
+    selectedItemChanged(val) {
+        const { onSelectedChanged } = this.props;
+        if(onSelectedChanged) {
+            onSelectedChanged(val);
+        }
+    }
+
+    handleKeyDown(e) {
+        const keyCode = e.keyCode,
+            { showAttr, freeTextSelection } = this.props,
+            { inputField } = this.refs,
+            { focusIndex, searchResults, inputValue } = this.getFromStateOrReduxProps(),
+            maxLen = searchResults && searchResults.length - 1;
+  
+        if(keyCode === 38) {
+            if(focusIndex === false) {
+                this.handleKeyBoardFocus(maxLen);
+            } else if(focusIndex - 1 >= 0) {
+                this.handleKeyBoardFocus(focusIndex - 1);
+            }
+        } else if(keyCode === 40) {
+            if(focusIndex === false) {
+                this.handleKeyBoardFocus(0);
+            } else if(focusIndex + 1 <= maxLen) {
+                this.handleKeyBoardFocus(focusIndex + 1);
+            }
+        } else if(keyCode === 13) {
+            if(focusIndex !== false && searchResults.length > 0) {
+                this.selectItem(searchResults[focusIndex][showAttr]);
             } else {
-                this.setState({
-                    showPlaceholder: true
-                });
+                if(inputValue.length > 0 && freeTextSelection !== false) {
+                    this.selectItem(inputValue);
+                } else {
+                    this.setStateOrReduxAction({selectedItem: false, showDropDown: false, showPlaceholder: true});
+                    this.selectItem('');
+                    inputField.blur();
+                }
             }
         }
+    }
 
-        if(reduxComponent) {
-            this.props.actions.hideDropDown(this.props.namespace);
-        } else {
-            this.setState({
-                showDropDown: false
-            });
+    handleKeyBoardFocus(index) {
+        this.mouseMoveCounter = 0;
+        this.handleItemFocus(index);
+    }
+
+    handleMouseMove(index) {
+        this.mouseMoveCounter++;
+        if(this.mouseMoveCounter === 2) {
+            this.handleItemFocus(index);
         }
+    }
+
+    handleMouseOverItem(index) {
+        if(this.mouseMoveCounter > 1) {
+            this.handleItemFocus(index);
+        }
+    }
+
+    handleItemFocus(index) {
+        this.setStateOrReduxAction({focusIndex : index});
+    }
+
+    selectItem(val) {
+        const addProps = {},
+            { inputValue, selectedItem } = this.getFromStateOrReduxProps(),
+            { items, showAttr } = this.props;
+        if(val === false) {
+            addProps.inputValue = '';
+            if(typeof items !== 'undefined') {
+                addProps.searchResults = items;
+            }
+        }
+        this.setStateOrReduxAction({
+            selectedItem: val, 
+            showDropDown: false,
+            showPlaceholder: val === false ? true : false,
+            ...addProps
+        });
+        this.selectedItemChanged(val);
+    }
+
+    handleItemClick(e) {
+        this.selectItem(e.target.innerText);
+    }
+
+    handleSelectedClick(e) {
+        const { freeTextSelection } = this.props, 
+            { inputValue, selectedItem } = this.getFromStateOrReduxProps();
+
+        this.inputFieldSelectedAfterReopen = true;
+        this.setStateOrReduxAction({
+            showDropDown: true
+        });
+    }
+
+    handleBlur() {
+        this.closeDropDown();
     }
 
     buildRequestData() {
@@ -185,14 +357,14 @@ export class ReactSelectSuggest extends Component {
     }
 
     handleChange(e) {
-        const innerText = e.target.value;
-
-        if(this.props.reduxComponent) {
-            this.props.actions.changeInputValue(this.props.namespace, innerText);
+        const { items, showAttr } = this.props, 
+            { searchResults } = this.getFromStateOrReduxProps(),
+            innerText = e.target.value;
+        
+        if(typeof items !== 'undefined') {
+            this.setStateOrReduxAction({inputValue: innerText, searchResults: items.filter(item => item[showAttr].includes(innerText))});
         } else {
-            this.setState({
-                inputValue: innerText
-            });
+            this.setStateOrReduxAction({inputValue: innerText});
         }
     }
 
@@ -215,22 +387,34 @@ export class ReactSelectSuggest extends Component {
     }
 
     render() {
-        const { reactSelectReducer, placeholder, showAttr, boxHeight, boxWidth, reduxComponent } = this.props,
-            { showPlaceholder, inputValue, searchResults, showDropDown, fetching, selectedItem, error } = reduxComponent ? reactSelectReducer : this.state,
+        const { placeholder, showAttr, boxHeight, boxWidth, freeTextSelection } = this.props,
+            { showPlaceholder, inputValue, searchResults, showDropDown, 
+                fetching, selectedItem, error, resetSelected, focusIndex 
+            } = this.getFromStateOrReduxProps(),
             resultAvailable = searchResults && searchResults.length > 0,
             hasSelected = selectedItem && selectedItem.length > 0,
+            placeholderExist = typeof placeholder !== 'undefined' && placeholder.length > 0,
+            showInputField = showDropDown || !hasSelected,
+            showDropDownIcon = (resultAvailable || hasSelected) && !fetching && !showDropDown,
+            showDropUpIcon = showDropDown && !fetching && inputValue.length > 0,
+            showLeftIcon = showDropDown && inputValue.length === 0,
             errorsAvailable = error !== false;
 
         return (
-            <div ref="mainBox" className="react-select-suggest" style={this.checkWidth(boxWidth)}>
+            <div ref="mainBox" className="react-select-suggest" 
+                    style={this.checkWidth(boxWidth)} 
+                    onKeyDown={this.handleKeyDown}
+                    onMouseLeave={this.handleMouseLeave}>
                 <div className="react-select-suggest-input-main">
-                    <div className="react-select-placeholder" style={this.checkDisplay(showPlaceholder)}>{placeholder}</div>
+                    <div className="react-select-placeholder" 
+                        style={this.checkDisplay(showPlaceholder && placeholderExist)}>{placeholder}
+                    </div>
                     <div className="react-select-ajax-loader" 
                         style={this.checkDisplay(fetching)}>
                         <img src={ajaxLoader} />    
                     </div>
                     <div className="react-select-selected"
-                        style={this.checkDisplay(hasSelected)}
+                        style={this.checkDisplay(!showInputField)}
                         onClick={this.handleSelectedClick}> 
                         {selectedItem}
                     </div>
@@ -240,11 +424,23 @@ export class ReactSelectSuggest extends Component {
                         onChange={this.handleChange}
                         style={
                             Object.assign(
-                                this.checkDisplay(!hasSelected),
+                                this.checkDisplay(showInputField),
                                 this.checkWidth(boxWidth)
                             )
                         }
-                        ref="inputField"/>
+                        ref="inputField" value={inputValue}/>
+                        <span className="react-select-clear" 
+                            onClick={this.handleClear}
+                            style={this.checkDisplay(hasSelected)}>x</span>
+                        <span className="react-select-bottom-arrow" 
+                            onClick={this.handleClickArrow}
+                            style={this.checkDisplay(showDropDownIcon)}/>
+                        <span className="react-select-up-arrow" 
+                            onClick={this.handleClickArrow}
+                            style={this.checkDisplay(showDropUpIcon)}/>
+                        <span className="react-select-left-arrow" 
+                            onClick={this.handleClickArrow}
+                            style={this.checkDisplay(showLeftIcon)}/>
                 </div>
                 <div className="react-select-drop-down"
                     ref="dropDown"
@@ -257,9 +453,15 @@ export class ReactSelectSuggest extends Component {
                     {resultAvailable && showDropDown &&
                         <ul>
                             {searchResults.map((result, index) =>
-                                <li onMouseDown={this.handleItemClick} 
-                                    key={index}
-                                    className={index % 2 > 0 ? 'odd' : 'even'}>{result[showAttr]}</li>
+                                <ReactSelectSuggestItem 
+                                    onHandleItemClick={this.handleItemClick}
+                                    onHandleItemFocus={this.handleMouseOverItem}
+                                    onHandleMouseMove={this.handleMouseMove}
+                                    index={index} 
+                                    key={index} 
+                                    result={result}
+                                    showAttr={showAttr}
+                                    focusIndex={focusIndex}/>  
                             )}
                         </ul>
                     }
@@ -278,15 +480,18 @@ export class ReactSelectSuggest extends Component {
 }
 
 ReactSelectSuggest.propTypes = {
-    url: PropTypes.string.isRequired,
     showAttr: PropTypes.string.isRequired,
+    url: PropTypes.string,
     namespace: PropTypes.string,
     boxWidth: PropTypes.string,
     boxHeight: PropTypes.string,
+    freeTextSelection: PropTypes.bool,
     placeholder: PropTypes.string,
     reduxComponent: PropTypes.bool,
     reactSelectReducer: PropTypes.object,
-    actions: PropTypes.object
+    actions: PropTypes.object,
+    onSelectedChanged: PropTypes.func,
+    items: PropTypes.array
 };
 
 

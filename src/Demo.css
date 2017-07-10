@@ -5,3 +5,31 @@
 .specificWidth2 {
     width : 500px;
 }
+
+/*
+.specialStyle .react-select-suggest input,
+.specialStyle .react-select-selected{
+    padding-left: 5px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+
+.specialStyle .react-select-placeholder {
+    top: 4px;
+}
+.specialStyle .react-select-bottom-arrow {
+    top: -3px;
+}
+.specialStyle .react-select-up-arrow {
+    top: 2px;
+}
+.specialStyle .react-select-left-arrow {
+    top: -2px;
+}
+.specialStyle .react-select-clear {
+    top: 4px;
+}
+.specialStyle .react-select-ajax-loader {
+    top: 4px;
+}
+*/

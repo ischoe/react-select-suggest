@@ -82,8 +82,11 @@ const rootReducer = combineReducers({
 ```
 
 # Options
-url : Required - the uri which needs to return json data  
 showAttr : Required - the attribute which contains the data you want to display  
+url : Required - is ignored when items is set - the uri which needs to return json data
+items : Optional - this needs to be an array of json objects
 placeholder : Optional - a string which is the placeholder for the empty input field  
 boxHeight : Optional - the height of the opening dropdown box, if not specified it is always as high as the results  
 boxWidth : Optional - the width of the whole component, if not specified it is as width as the parent div
+freeTextSelection : Optional boolean - if false you can't select a value which is not in the provided list
+onSelectedChanged : Optional - change handler function which returns the selected value

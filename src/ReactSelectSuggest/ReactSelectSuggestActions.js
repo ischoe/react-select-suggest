@@ -6,6 +6,8 @@ export const showDropDown = (namespace) => ({ type: namespace + 'SHOW_DROPDOWN' 
 export const hideDropDown = (namespace) => ({ type: namespace+ 'HIDE_DROPDOWN' });
 export const changeInputValue = (namespace, inputValue) => ({ type: namespace + 'INPUT_CHANGE', inputValue });
 export const selectItem = (namespace, selectedItem) => ({ type: namespace + 'SELECT_ITEM', selectedItem });
+export const resetSelected = (namespace, resetSelected) => ({ type: namespace + 'RESET_SELECTED', resetSelected });
+export const setFocusIndex = (namespace, index) => ({ type: namespace + 'SET_FOCUS_INDEX', index});
 
 export const searchResultsStart = (namespace) => ({ type: namespace + 'SEARCH_RESULTS_START' });
 export const searchResultsSuccess = (namespace, searchResults) => ({ type: namespace + 'SEARCH_RESULTS_FINISHED', searchResults });

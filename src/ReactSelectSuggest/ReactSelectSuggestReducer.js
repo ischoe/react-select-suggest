@@ -1,14 +1,6 @@
-const initialState = {
-    showPlaceholder: true,
-    inputValue: '',
-    fetching: false,
-    showDropDown: false,
-    searchResults: [],
-    error: false,
-    selectedItem: ''
-};
+import defaultState from './ReactSelectInitialState';
 
-const reactSelectReducer = (name) => (state = initialState, action) => {
+const reactSelectReducer = (name) => (state = defaultState, action) => {
   const namespace = name || 'reactSelectReducer';
   switch (action.type) {
     case namespace+'SHOW_PLACEHOLDER':
@@ -81,8 +73,22 @@ const reactSelectReducer = (name) => (state = initialState, action) => {
           ...state,
           selectedItem: action.selectedItem
       };
-      break;           
+      break; 
 
+    case namespace+'RESET_SELECTED':
+      state = {
+          ...state,
+          resetSelected: action.resetSelected
+      };
+      break;
+
+    case namespace+'SET_FOCUS_INDEX':
+      state = {
+          ...state,
+          focusIndex: action.index
+      };
+      break;
+    
     default:
       break;
   }
