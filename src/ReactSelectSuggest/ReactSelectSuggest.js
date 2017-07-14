@@ -41,9 +41,8 @@ export class ReactSelectSuggest extends Component {
     }
 
     componentDidMount () {
-        const { inputField, mainBox } = this.refs,
-            { offsetWidth: inputOffset } = inputField,
-            { offsetWidth: mainOffset } = mainBox;
+        const { offsetWidth: inputOffset } = this.inputField,
+            { offsetWidth: mainOffset } = this.mainBox;
 
         this.resizeInputWidth(inputOffset, mainOffset);
     }
@@ -51,22 +50,21 @@ export class ReactSelectSuggest extends Component {
     componentDidUpdate(prevProps, prevState) {
         const { reduxComponent, freeTextSelection, items, showAttr } = this.props,
             { inputValue, selectedItem, showDropDown, resetSelected, focusIndex } = this.getFromStateOrReduxProps(),
-            { inputField, dropDown } = this.refs,
             prevInput = reduxComponent ? prevProps.reactSelectReducer.inputValue : prevState.inputValue;
         
         if(typeof items === 'undefined') {
             this.searchForResults(inputValue, prevInput);
         }
 
-        if(showDropDown && dropDown.offsetWidth > 0) {
-            const offset = inputField.offsetWidth - dropDown.offsetWidth;
+        if(showDropDown && this.dropDown.offsetWidth > 0) {
+            const offset = this.inputField.offsetWidth - this.dropDown.offsetWidth;
             if(offset > 0) {
-                dropDown.style.width = (parseInt(dropDown.style.width) + offset) + 'px';
+                this.dropDown.style.width = (parseInt(this.dropDown.style.width) + offset) + 'px';
             }
         }
         
         if(this.inputFieldSelectedAfterReopen) {
-            inputField.select();
+            this.inputField.select();
             this.inputFieldSelectedAfterReopen = false;
         }
 
@@ -74,10 +72,14 @@ export class ReactSelectSuggest extends Component {
             const prevFocusIndex = reduxComponent ? prevProps.reactSelectReducer.focusIndex : prevState.focusIndex;
 
             if(prevFocusIndex !== focusIndex) {
-                const focusElementTop = dropDown.getElementsByClassName('react-select-suggest-focus')[0];
-                if(focusElementTop && focusElementTop.offsetTop > dropDown.offsetHeight/2) {
-                    dropDown.scrollTop = focusElementTop.offsetTop - dropDown.offsetHeight/2;
+                const focusElementTop = this.dropDown.getElementsByClassName('react-select-suggest-focus')[0];
+                if(focusElementTop && focusElementTop.offsetTop > this.dropDown.offsetHeight/2) {
+                    this.dropDown.scrollTop = focusElementTop.offsetTop - this.dropDown.offsetHeight/2;
                 }
+            }
+
+            if(focusIndex === 0) {
+                this.dropDown.scrollTop = 0;
             }
         }
     }
@@ -110,23 +112,23 @@ export class ReactSelectSuggest extends Component {
 
     resizeInputWidth(inputOffset, mainOffset) {
         const { boxWidth } = this.props,
-            { inputField, dropDown } = this.refs,
             boxWidthValue = parseInt(boxWidth);
 
         if (boxWidth) {
-            inputField.style.width = boxWidthValue + 'px';
-            dropDown.style.width = boxWidthValue + 'px';
+            this.inputField.style.width = boxWidthValue + 'px';
+            this.dropDown.style.width = boxWidthValue + 'px';
 
-            if(inputField.offsetWidth > boxWidthValue) {
-                this.checkWidthAfterResize(boxWidthValue, inputField, dropDown);
+            if(this.inputField.offsetWidth > boxWidthValue) {
+                this.checkWidthAfterResize(boxWidthValue, this.inputField, this.dropDown);
             }
         } else {
-            inputField.style.width = mainOffset + 'px';
-            dropDown.style.width = mainOffset + 'px';
-            if(inputField.offsetWidth > mainOffset) {
-                this.checkWidthAfterResize(mainOffset, inputField, dropDown);
+            this.inputField.style.width = mainOffset + 'px';
+            this.dropDown.style.width = mainOffset + 'px';
+            if(this.inputField.offsetWidth > mainOffset) {
+                this.checkWidthAfterResize(mainOffset, this.inputField, this.dropDown);
             }
         }
+        this.dropDownWidth = this.dropDown.style.width;
     }
 
     checkWidthAfterResize(mainWidth, inputField, dropDown) {
@@ -231,8 +233,7 @@ export class ReactSelectSuggest extends Component {
     }
 
     handleClickArrow() {
-        const { inputField } = this.refs, 
-            { showDropDown } = this.getFromStateOrReduxProps();
+        const { showDropDown } = this.getFromStateOrReduxProps();
         if(showDropDown) {
             this.closeDropDown();
         } else {
@@ -258,7 +259,6 @@ export class ReactSelectSuggest extends Component {
     handleKeyDown(e) {
         const keyCode = e.keyCode,
             { showAttr, freeTextSelection } = this.props,
-            { inputField } = this.refs,
             { focusIndex, searchResults, inputValue } = this.getFromStateOrReduxProps(),
             maxLen = searchResults && searchResults.length - 1;
   
@@ -283,7 +283,7 @@ export class ReactSelectSuggest extends Component {
                 } else {
                     this.setStateOrReduxAction({selectedItem: false, showDropDown: false, showPlaceholder: true});
                     this.selectItem('');
-                    inputField.blur();
+                    this.inputField.blur();
                 }
             }
         }
@@ -374,6 +374,16 @@ export class ReactSelectSuggest extends Component {
         };
     }
 
+    checkTransition(valueToCheck, height) {
+        const opacityTime = valueToCheck ? '500ms' : '0ms',
+            dropTime = valueToCheck ? '300ms' : '0ms';
+        return {
+            opacity: valueToCheck ? 1 : 0,
+            maxHeight: valueToCheck ? height + 'px' : '0px',
+            transition: 'max-height '+dropTime+' ease-in, opacity '+opacityTime+' ease-out'
+        };
+    }
+
     checkHeight(height) {
         return {
             maxHeight: height + 'px'
@@ -401,7 +411,7 @@ export class ReactSelectSuggest extends Component {
             errorsAvailable = error !== false;
 
         return (
-            <div ref="mainBox" className="react-select-suggest" 
+            <div ref={node => this.mainBox = node} className="react-select-suggest" 
                     style={this.checkWidth(boxWidth)} 
                     onKeyDown={this.handleKeyDown}
                     onMouseLeave={this.handleMouseLeave}>
@@ -428,7 +438,7 @@ export class ReactSelectSuggest extends Component {
                                 this.checkWidth(boxWidth)
                             )
                         }
-                        ref="inputField" value={inputValue}/>
+                        ref={node => this.inputField = node} value={inputValue}/>
                         <span className="react-select-clear" 
                             onClick={this.handleClear}
                             style={this.checkDisplay(hasSelected)}>x</span>
@@ -443,13 +453,12 @@ export class ReactSelectSuggest extends Component {
                             style={this.checkDisplay(showLeftIcon)}/>
                 </div>
                 <div className="react-select-drop-down"
-                    ref="dropDown"
                     style={
                         Object.assign(
-                            this.checkDisplay(resultAvailable && showDropDown),
-                            this.checkHeight(boxHeight)
+                            this.checkTransition(resultAvailable && showDropDown, boxHeight)
                         )
-                    }>
+                    }
+                    ref={node => this.dropDown = node}>
                     {resultAvailable && showDropDown &&
                         <ul>
                             {searchResults.map((result, index) =>
@@ -465,7 +474,7 @@ export class ReactSelectSuggest extends Component {
                             )}
                         </ul>
                     }
-                </div>
+                </div>     
                 <div className="react-select-box-errors" style={this.checkDisplay(errorsAvailable)}>
                     {errorsAvailable &&
                         <ul>

@@ -1,4 +1,19 @@
-.react-select-drop-down, .react-select-box {
+.react-select-drop-down ul, .react-select-box-errors ul{
+    display: block;
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+}
+
+.react-select-drop-down{
+    opacity: 0;
+    z-index: 1000;
+    position: absolute;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+}
+
+.react-select-box {
     display: none;
     z-index: 1000;
     position: absolute;
@@ -10,13 +25,6 @@
 .react-select-box-errors {
     overflow-y: scroll;
     border: 1px solid;
-}
-
-.react-select-drop-down ul, .react-select-box-errors ul{
-    display: block;
-    list-style: none;
-    margin: 0px;
-    padding: 0px;
 }
 
 .react-select-drop-down ul li, .react-select-box-errors ul li{
@@ -32,6 +40,7 @@
 
 .react-select-suggest-input-main {
     position: relative;
+    max-height: 27px;
 }
 
 .react-select-suggest-input-main input {
@@ -42,6 +51,10 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+
+.react-select-suggest-input-main input::-ms-clear {
+    display: none;
 }
 
 .react-select-suggest-input-main input:focus {
@@ -85,10 +98,9 @@
     padding-left: 5px;
     padding-bottom: 5px;
     padding-top: 5px;
-
     border: 1px solid #ccc;
     border-radius: 4px;
-    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
 }
 
 .react-select-ajax-loader {
