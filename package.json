@@ -1,6 +1,6 @@
 {
   "name": "react-select-suggest",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Auto-Suggest-Box built with React & Redux",
   "main": "lib/export.js",
   "repository": {
