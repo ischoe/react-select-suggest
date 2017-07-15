@@ -396,6 +396,42 @@ export class ReactSelectSuggest extends Component {
         };
     }
 
+    renderDropDown(showTheDropDown, boxHeight, searchResults, showAttr, focusIndex) {
+        return (
+            <div className="react-select-drop-down"
+                style={this.checkTransition(showTheDropDown, boxHeight)}
+                ref={node => this.dropDown = node}>
+                {showTheDropDown &&
+                    <ul>
+                        {searchResults.map((result, index) =>
+                            <ReactSelectSuggestItem 
+                                onHandleItemClick={this.handleItemClick}
+                                onHandleItemFocus={this.handleMouseOverItem}
+                                onHandleMouseMove={this.handleMouseMove}
+                                index={index} 
+                                key={index} 
+                                result={result}
+                                showAttr={showAttr}
+                                focusIndex={focusIndex}/>  
+                        )}
+                    </ul>
+                }
+            </div>
+        );
+    }
+
+    renderErrors(error, errorsAvailable) {
+        return (
+            <div className="react-select-box-errors" style={this.checkDisplay(errorsAvailable)}>
+                    {errorsAvailable &&
+                        <ul>
+                            <li>{error}</li>
+                        </ul>
+                    }
+            </div>
+        );
+    }
+
     render() {
         const { placeholder, showAttr, boxHeight, boxWidth, freeTextSelection } = this.props,
             { showPlaceholder, inputValue, searchResults, showDropDown, 
@@ -408,7 +444,8 @@ export class ReactSelectSuggest extends Component {
             showDropDownIcon = (resultAvailable || hasSelected) && !fetching && !showDropDown,
             showDropUpIcon = showDropDown && !fetching && inputValue.length > 0,
             showLeftIcon = showDropDown && inputValue.length === 0,
-            errorsAvailable = error !== false;
+            errorsAvailable = error !== false,
+            showTheDropDown = resultAvailable && showDropDown;
 
         return (
             <div ref={node => this.mainBox = node} className="react-select-suggest" 
@@ -452,36 +489,8 @@ export class ReactSelectSuggest extends Component {
                             onClick={this.handleClickArrow}
                             style={this.checkDisplay(showLeftIcon)}/>
                 </div>
-                <div className="react-select-drop-down"
-                    style={
-                        Object.assign(
-                            this.checkTransition(resultAvailable && showDropDown, boxHeight)
-                        )
-                    }
-                    ref={node => this.dropDown = node}>
-                    {resultAvailable && showDropDown &&
-                        <ul>
-                            {searchResults.map((result, index) =>
-                                <ReactSelectSuggestItem 
-                                    onHandleItemClick={this.handleItemClick}
-                                    onHandleItemFocus={this.handleMouseOverItem}
-                                    onHandleMouseMove={this.handleMouseMove}
-                                    index={index} 
-                                    key={index} 
-                                    result={result}
-                                    showAttr={showAttr}
-                                    focusIndex={focusIndex}/>  
-                            )}
-                        </ul>
-                    }
-                </div>     
-                <div className="react-select-box-errors" style={this.checkDisplay(errorsAvailable)}>
-                    {errorsAvailable &&
-                        <ul>
-                            <li>{error}</li>
-                        </ul>
-                    }
-                </div>
+                {this.renderDropDown(showTheDropDown, boxHeight, searchResults, showAttr, focusIndex)}     
+                {this.renderErrors(error, errorsAvailable)}
                 <div className="react-select-box" />
             </div>
         );

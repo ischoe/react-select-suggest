@@ -118,7 +118,7 @@ test('react-select-suggest markup generated correctly', (assert) => {
     assert.equal(inputField.length > 0, true, 'input field rendered');
     assert.equal(placeHolder.length > 0, true, 'placeholder should be available');
     assert.equal(placeHolder.text(), 'hello', 'placeholder correctly initialized');
-    assert.equal(dropDown.props().style.display, 'none', 'Component has a drop down box which is not visible');
+    assert.equal(dropDown.props().style.opacity, 0, 'Component has a drop down box which is not visible');
     assert.equal(selectBox.length > 0, true, 'Component has a select field');
     assert.equal(inputAjaxLoader.length > 0, true, 'Component has an ajax loader');
     assert.end();
@@ -161,7 +161,7 @@ test('focus on input field will set showDropDown correctly and hide the placehol
         }
     });
     assert.equal(placeHolder.props().style.display, 'none', 'placeholder should not be visible');
-    assert.equal(dropDown.props().style.display, 'none', 'dropdown should not be visible because we have no results');
+    assert.equal(dropDown.props().style.opacity, 0, 'dropdown should not be visible because we have no results');
 
     restoreSpies(fixtures);
     assert.end();
@@ -204,12 +204,12 @@ test('dropdown should be hidden when no results found or the focus is lost', (as
         fixtures = setupFixtures(),
         { hideDropDownSpy } = fixtures.spies;
     
-    assert.equal(dropDown.props().style.display, 'none',
+    assert.equal(dropDown.props().style.opacity, 0,
         'Dropdow is not visible when there are no results'
     );
 
     component.setProps(propsForInputWithResults());
-    assert.equal(dropDown.props().style.display, 'block','Dropdow should now be visible');
+    assert.equal(dropDown.props().style.opacity, 1,'Dropdow should now be visible');
 
     inputField.simulate('blur');
     assert.equal(hideDropDownSpy.called, true,
@@ -232,7 +232,7 @@ test('dropdown should be hidden when no results found or the focus is lost', (as
         }
     });
 
-    assert.equal(dropDown.props().style.display, 'none',
+    assert.equal(dropDown.props().style.opacity, 0,
         'Dropdow should be hidden after losing the focus from input'
     );
 
@@ -244,7 +244,7 @@ test('when results found the drop down should be displayed', (assert) => {
     const component = createReduxComponent(propsForInputWithResults()),
         { dropDown, dropDownElements } = getBasicComponentNodes(component);
 
-    assert.equal(dropDown.props().style.display, 'block', 'Dropdow is visible when inputValue finds results and showDropDown is true');
+    assert.equal(dropDown.props().style.opacity, 1, 'Dropdow is visible when inputValue finds results and showDropDown is true');
     assert.equal(dropDownElements.length, 2, 'Dropdow displays two results');
     assert.equal(dropDownElements.nodes[0].innerHTML, 'hell', 'Dropdow displays first result correctly');
 
@@ -307,7 +307,7 @@ test('clearing the input will clear the searchresult', (assert) => {
         fixtures = setupFixtures(),
         { clearSearchresultsSpy } = fixtures.spies;
 
-    assert.equal(dropDown.props().style.display, 'block', 'dropdown should be visible');
+    assert.equal(dropDown.props().style.opacity, 1, 'dropdown should be visible');
 
     component.setProps({
         reactSelectReducer : {
@@ -318,14 +318,19 @@ test('clearing the input will clear the searchresult', (assert) => {
     });
 
     assert.equal(clearSearchresultsSpy.called, true, 'clear input has been called');
-    assert.equal(dropDown.props().style.display, 'none', 'dropdown should now be hidden');
+    assert.equal(dropDown.props().style.opacity, 0, 'dropdown should now be hidden');
     
     restoreSpies(fixtures);
     assert.end(); 
 });
 
 test('height and width are configurable', (assert) => {
-    const component = createReduxComponent({boxWidth: '400', boxHeight:'200'}),
+    const props = {
+            ...propsForInputWithResults(),
+            boxWidth: '400', 
+            boxHeight:'200'
+        },
+        component = createReduxComponent(props),
         { mainNode, inputField, dropDown } = getBasicComponentNodes(component);
 
     assert.equal(mainNode.props().style.width, '400px', 'main area has the correct width');
@@ -444,7 +449,7 @@ test('removing the whole input will clear the selecteditem', (assert) => {
         fixtures = setupFixtures(),
         { showPlaceholderSpy, selectedItemSpy } = fixtures.spies;
 
-    assert.equal(dropDown.props().style.display, 'block', 'dropdown should be visible');
+    assert.equal(dropDown.props().style.opacity, 1, 'dropdown should be visible');
     assert.equal(placeHolder.props().style.display, 'none', 'placeHolder should be hidden');
     
     component.setProps({
@@ -480,7 +485,7 @@ test('focus dropdown elements works', (assert) => {
     const component = createReduxComponent(propsForInputWithResults()),
         { dropDown,  dropDownElements } = getBasicComponentNodes(component);
 
-    assert.equal(dropDown.props().style.display, 'block', 'dropdown should be visible');
+    assert.equal(dropDown.props().style.opacity, 1, 'dropdown should be visible');
     
     component.setProps({
         reactSelectReducer : {
@@ -692,7 +697,7 @@ test('searchResults can be initialized as props', (assert) => {
 
        
     assert.equal(searchResultsSuccessSpy.calledWith(namespace, items), true, 'searchResults are initialized');
-    assert.equal(dropDown.props().style.display, 'none', 'drop down is not visible');
+    assert.equal(dropDown.props().style.opacity, 0, 'drop down is not visible');
 
     resetSpies(fixtures);
     component.setProps({
@@ -707,7 +712,7 @@ test('searchResults can be initialized as props', (assert) => {
     inputField.simulate('change');
 
     const { dropDownElements } = getBasicComponentNodes(component); 
-    assert.equal(dropDown.props().style.display, 'block', 'dropdown is visible');
+    assert.equal(dropDown.props().style.opacity, 1, 'dropdown is visible');
     assert.equal(searchResultsSuccessSpy.calledWith(namespace, [{title: 'hi'}]), true, 'searchResults are filtered');
 
     restoreSpies(fixtures);
